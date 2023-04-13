@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
-    name := "picidae",
+    name := "antispame_offline",
     libraryDependencies += "org.apache.spark" %% "spark-core" % "3.0.1" % "provided",
     libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.0.1" % "provided",
     libraryDependencies += "org.apache.spark" %% "spark-hive" % "3.0.1" % "provided",
