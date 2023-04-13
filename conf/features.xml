@@ -1,0 +1,66 @@
+<xml>
+  <feature-group>
+    <group>DEVICE_CONVERT_FEATURE</group>
+    <log>EcommConvertLog</log>
+    <dkey>union_imei</dkey>
+    <window>24</window>
+    <space>union_imei IS NOT NULL AND union_imei != ''</space>
+    <feature>
+      <dkey>union_imei</dkey>
+      <fkey>device_all_app_distinct_cnt</fkey>
+      <space>app_id != 0 AND app_id != -1 and new_flag = 1</space>
+      <aggregator><type>distinct</type><distinctkey>app_id</distinctkey></aggregator>
+    </feature>
+    <feature>
+      <dkey>union_imei</dkey>
+      <fkey>device_all_convert_cnt</fkey>
+      <space>true</space>
+      <aggregator><type>count</type></aggregator>
+    </feature>
+    <feature>
+      <dkey>union_imei</dkey>
+      <fkey>device_all_app_risk_ratio</fkey>
+      <space>true</space>
+      <aggregator><type>ratio</type><top>app_flag IN (12, 42)</top><bottom>true</bottom></aggregator>
+    </feature>
+    <feature>
+      <dkey>union_imei</dkey>
+      <fkey>device_all_app_top1_ratio</fkey>
+      <space>app_id != 0 AND app_id != -1</space>
+      <aggregator><type>top_n_ratio</type><ckey>app_id</ckey><num>1</num></aggregator>
+    </feature>
+    <feature>
+      <dkey>union_imei</dkey>
+      <fkey>device_all_ecpm_rmb_avg</fkey>
+      <space>ecpm_rmb gt 0.0</space>
+      <aggregator><type>stats</type><func>avg</func><statskey>ecpm_rmb</statskey><truncate>5000</truncate></aggregator>
+    </feature>
+    <feature>
+      <dkey>union_imei</dkey>
+      <aggregator><type>iat</type><skey>at_time_timestamp</skey></aggregator>
+      <valkey>
+        <key>at_time_timestamp</key>
+        <iatconf>
+          <iatfunc>minus</iatfunc>
+          <iatfuncspace>at_time_timestamp is not null</iatfuncspace>
+          <iattruncate>3600</iattruncate>
+          <iatfea>
+            <iatfkey>device_all_iat_avg</iatfkey>
+            <iatspace>iat is not null</iatspace>
+            <aggregator><type>stats</type><func>avg</func></aggregator>
+          </iatfea>
+          <iatfea>
+            <iatfkey>device_all_iat_std</iatfkey>
+            <iatspace>iat is not null</iatspace>
+            <aggregator><type>stats</type><func>stddev_pop</func></aggregator>
+          </iatfea>
+          <iatfea>
+            <iatfkey>device_all_iat_le30s_ratio</iatfkey>
+            <iatspace>iat is not null</iatspace>
+            <aggregator><type>ratio</type><top>iat le 30</top><bottom>true</bottom></aggregator>
+          </iatfea>
+        </iatconf>
+      </valkey>
+    </feature>
+  </feature-group>
+</xml>
