@@ -8,8 +8,8 @@
     <feature>
       <dkey>union_imei</dkey>
       <fkey>device_all_app_distinct_cnt</fkey>
-      <space>app_id != 0 AND app_id != -1 and new_flag = 1</space>
-      <aggregator><type>distinct</type><distinctkey>app_id</distinctkey></aggregator>
+      <space>app_id != 0 AND app_id != -1</space>
+      <aggregator><type>distinct_count</type><distinctkey>app_id</distinctkey></aggregator>
     </feature>
     <feature>
       <dkey>union_imei</dkey>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 export SPARK_SUBMIT_VERSION=3.0
 
-DATE="20221211"
+DATE="20230401"
 HOUR="20"
 WINDOW=1
 JAR=$(ls target/scala-2.12/antispame_offline-assembly-0.1.0.jar)
@@ -15,7 +15,7 @@ doas spark-submit \
   --executor-memory 16G \
   --driver-memory 12G \
   --driver-cores 8 \
-  --queue root.hyena_adunion \
+  --queue root.koala_yg_ad_antispam_strategy \
   --conf spark.hadoop.mapred.output.compress=true \
   --conf spark.dynamicAllocation.enabled=true \
   --conf spark.yarn.executor.memoryOverhead=32g \

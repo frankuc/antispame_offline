@@ -12,7 +12,7 @@ class ExecutorArgs(argv: Array[String]) extends Serializable {
   var date: String = "20221220"
   var hour: String = "12"
   var window: Int = 1
-  var outHiveTable:String = "union_anti.dwa_union_antispam_dim_aggregator_feature_hourly"
+  var outHiveTable:String = "union_anti.dwa_union_antispam_dim_aggregator_feature_hourly_new"
   var version:String = "test_1.0"
   var featureConfig: String = "features.xml"
   var featureGroup: Array[String] = Array[String]("DEVICE_CONVERT_FEATURE", "APP_CONVERT_FEATURE")
