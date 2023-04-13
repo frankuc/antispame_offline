@@ -1,6 +1,7 @@
 package feature
 
 import scala.xml.NodeSeq
+import scala.xml.Elem
 
 case class LogInfo(groupName:String, baseLog:String, window:Int, space: String) {
   override def toString: String = {
@@ -246,6 +247,14 @@ object Utils {
 
   }
 
+  def featureGroupCheck(xmlFile:scala.xml.Elem, featureGroupArr:Array[String]): Unit = {
+    featureGroupArr.map { groupName =>
+      val groupNode = (xmlFile \ "feature-group").filter(x => (x \ "group").text == groupName)
+      if(groupNode.size == 0) {
+        throw new Exception(s"invalid match notices ! feature-group: ${groupName} is not match in xml feature configuration")
+      }
+    }
+  }
 
   def featureXmlConfCheck(groupNode:NodeSeq): Unit = {
     duplicateFtest(groupNode)

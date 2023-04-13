@@ -26,12 +26,10 @@ object Executor {
 
     val args = new ExecutorArgs(argv)
     val xmlFile = XML.loadFile(args.featureConfig)
+    Utils.featureGroupCheck(xmlFile, args.featureGroup)
 
     args.featureGroup.map { groupName =>
       val groupNode = (xmlFile \ "feature-group").filter(x => (x \ "group").text == groupName)
-      if(groupNode.size == 0) {
-        throw new Exception(s"invalid notices!, feature-group: ${groupName} is not match in xml feature configuration")
-      }
       val aggTypes = (groupNode \ "feature" \ "aggregator" \ "type").map(_.text.trim).distinct
 
       println(s"========= ${groupName} =============")
