@@ -4,7 +4,7 @@ export SPARK_SUBMIT_VERSION=3.0
 DATE="20221211"
 HOUR="20"
 WINDOW=1
-JAR=$(ls target/scala-2.12/detect_2.12-0.0.1.jar)
+JAR=$(ls target/scala-2.12/antispame_offline-assembly-0.1.0.jar)
 
 doas spark-submit \
   --master yarn \
@@ -15,7 +15,7 @@ doas spark-submit \
   --executor-memory 16G \
   --driver-memory 12G \
   --driver-cores 8 \
-  --queue root.adunion_antispam_pm \
+  --queue root.topi_ad_union \
   --conf spark.hadoop.mapred.output.compress=true \
   --conf spark.dynamicAllocation.enabled=true \
   --conf spark.yarn.executor.memoryOverhead=32g \
@@ -52,10 +52,10 @@ doas spark-submit \
   --conf spark.io.compression.codec="snappy" \
   --conf spark.sql.parquet.compression.codec="snappy" \
   --class "feature.Executor" \
-  --files "./features1.xml" \
+  --files "./conf/features.xml" \
   $JAR \
   --date $DATE \
   --hour $HOUR \
   --window $WINDOW \
-  --version "test_2.0" \
-  --feature-config "features1.xml"
+  --version "test_3.0" \
+  --feature-config "features.xml"
