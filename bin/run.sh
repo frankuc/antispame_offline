@@ -57,5 +57,5 @@ doas spark-submit \
   --date $DATE \
   --hour $HOUR \
   --window $WINDOW \
-  --version "test_3.0" \
+  --version "test_4.0" \
   --feature-config "features.xml"
