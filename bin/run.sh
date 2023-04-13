@@ -15,7 +15,7 @@ doas spark-submit \
   --executor-memory 16G \
   --driver-memory 12G \
   --driver-cores 8 \
-  --queue root.topi_ad_union \
+  --queue root.hyena_adunion \
   --conf spark.hadoop.mapred.output.compress=true \
   --conf spark.dynamicAllocation.enabled=true \
   --conf spark.yarn.executor.memoryOverhead=32g \
