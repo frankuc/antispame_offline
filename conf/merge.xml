@@ -7,7 +7,7 @@
     <hour>20</hour>
     <dkey>union_imei</dkey>
     <aggtype>count,distinct_count,ratio,top_n_ratio,stats,iat</aggtype>
-    <version>test_2.0</version>
+    <version>test_4.0</version>
     <output><hdfs>test_batch_utils_v1</hdfs></output>
     <population-stats>true</population-stats>
     <feature>
