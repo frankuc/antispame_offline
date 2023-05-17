@@ -12,11 +12,14 @@ case class CountingItem(fKey: String, space: String) {
 class GroupAggregator extends Serializable {
 
   def initialize() = {
+    println("hello initialize()")
   }
   def sqlQuery(): String = {
+
     ""
   }
   def compute(spark:SparkSession): Unit = {
+    println("hello compute()")
   }
 
 }
