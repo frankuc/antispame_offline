@@ -75,7 +75,7 @@ class GroupAggregator extends Serializable {
     println(schemaItems)
 
     val countNodes = (groupNode \ "feature_list" \ "feature")
-      .filter(x => x \ "aggregator" \ "type".text.trim == "count")
+      .filter(x => (x \ "aggregator" \ "type").text.trim == "count")
 
     countItems = countNodes.map{ x =>
       var Array(fKey, space) = Array(x \ "fkey", x \ "space").map(_.text.trim)
