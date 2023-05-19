@@ -38,7 +38,7 @@ object GroupExecutor {
       val task = executors.submit(new Callable[Unit] {
         override def call():Unit = {
           val groupAggregator = new GroupAggregator()
-          groupAggregator.initialize()
+          groupAggregator.initialize(groupNodes(i), args)
           groupAggregator.compute(spark)
         }
       })

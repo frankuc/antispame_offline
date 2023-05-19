@@ -15,7 +15,17 @@
         <aggregator><type>distinct_count</type><distinctkey>union_imei</distinctkey></aggregator>
       </feature>
       <feature>
+        <fkey>uimei_distinct_cnt1</fkey>
+        <space>union_imei != ''</space>
+        <aggregator><type>distinct_count</type><distinctkey>union_imei</distinctkey></aggregator>
+      </feature>
+      <feature>
         <fkey>convert_cnt</fkey>
+        <space>req != ''</space>
+        <aggregator><type>count</type></aggregator>
+      </feature>
+      <feature>
+        <fkey>convert_cnt1</fkey>
         <space>req != ''</space>
         <aggregator><type>count</type></aggregator>
       </feature>
