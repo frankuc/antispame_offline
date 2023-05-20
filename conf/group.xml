@@ -21,22 +21,22 @@
       </feature>
       <feature>
         <fkey>convert_cnt</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>count</type></aggregator>
       </feature>
       <feature>
         <fkey>convert_cnt1</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>count</type></aggregator>
       </feature>
       <feature>
         <fkey>new_uimei_convert_ratio</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>ratio</type><top>union_imei_first_time_difference le 259200</top><bottom>true</bottom></aggregator>
       </feature>
       <feature>
         <fkey>new_uimei_ratio</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>union_imei_first_time_difference le 259200</top><bottom>true</bottom></aggregator>
       </feature>
       <feature>
@@ -73,17 +73,17 @@
       </feature>
       <feature>
         <fkey>convert_cnt</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>count</type></aggregator>
       </feature>
       <feature>
         <fkey>new_uimei_convert_ratio</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>ratio</type><top>union_imei_first_time_difference le 259200</top><bottom>true</bottom></aggregator>
       </feature>
       <feature>
         <fkey>new_uimei_ratio</fkey>
-        <space>req != ''</space>
+        <space>req_id != ''</space>
         <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>union_imei_first_time_difference le 259200</top><bottom>true</bottom></aggregator>
       </feature>
       <feature>
