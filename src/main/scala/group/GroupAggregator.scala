@@ -202,7 +202,7 @@ class GroupAggregator extends Serializable {
         disRatioItems = disRatioNodes.map { x =>
 
         val Array(fKey, space, distinctkey, topSpace, bottomSpace) =
-          Array(x \ "fkey", x \ "space", x \ "distinctkey", x \ "aggregator" \ "top",
+          Array(x \ "fkey", x \ "space", x  \ "aggregator" \ "distinctkey", x \ "aggregator" \ "top",
             x \ "aggregator" \ "bottom").map(_.text.trim)
 
         val spaceStr = if(space == "") "TRUE" else space
