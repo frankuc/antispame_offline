@@ -68,6 +68,12 @@ class GroupAggregator extends Serializable {
 
   var fKeys:String = ""
   var feaConf:String = ""
+  var countFeaConf:String = ""
+  var disCountFeaConf:String = ""
+  var ratioFeaConf:String = ""
+  var disRatioFeaConf:String = ""
+  var statsFeaConf:String = ""
+
   var groupKeyMap:String = ""
   var logSpace:String = ""
   var groupName:String = ""
@@ -91,6 +97,13 @@ class GroupAggregator extends Serializable {
         .map{schemaStr => SchemaItem(schemaStr)}
         .toArray
       println(schemaItems.mkString("|"))
+
+      groupKeyMap = schemaItems.map{ schemaItem =>
+        val schema = schemaItem.fields
+        val lineStr = s"'${schema}'" + ",\n" + s"concat_ws('|', ${schema})"
+        lineStr
+      }.mkString(",\n")
+
     }
 
     fKeys = (groupNode \ "feature_list" \ "feature" \ "fkey").map(_.text.trim).mkString(",\n")
@@ -108,6 +121,13 @@ class GroupAggregator extends Serializable {
       }.toArray
 
       println(countItems.mkString("|"))
+
+      countFeaConf = countItems.map { item =>
+        val space: String = Utils.spaceParse(item.space)
+        val fkey: String = item.fKey
+        s"SUM(IF(${space}, 1, 0)) AS ${fkey}"
+      }.mkString(",\n\t\t    ")
+
     }
 
 
@@ -126,6 +146,13 @@ class GroupAggregator extends Serializable {
       }.toArray
 
       println(disCountItems.mkString("|"))
+
+      disCountFeaConf = disCountItems.map { item =>
+        val space: String = Utils.spaceParse(item.space)
+        val fkey: String = item.fKey
+        val distinctKey:String = item.distinctKey
+        s"COUNT(DISTINCT(IF(${space}, concat_ws('|', ${distinctKey}), NULL))) AS ${fkey}"
+      }.mkString(",\n\t\t    ")
 
     }
 
@@ -153,6 +180,18 @@ class GroupAggregator extends Serializable {
 
       println(ratioItems.mkString("|"))
 
+      ratioFeaConf = ratioItems.map { item =>
+        val space: String = Utils.spaceParse(item.space)
+        val fkey: String = item.fKey
+        val topSpace: String = item.topSpace
+        val bottomSpace: String = item.bottomSpace
+
+        s"""SUM(IF(${space} AND ${bottomSpace} AND ${topSpace}, 1, 0))
+           |\t\t\t/ SUM(IF(${space} AND ${bottomSpace}, 1, 0)) AS ${fkey}
+           |""".stripMargin
+
+      }.mkString(",\n\t\t    ")
+
     }
 
 
@@ -177,6 +216,19 @@ class GroupAggregator extends Serializable {
        }.toArray
 
         println(disRatioItems.mkString("|"))
+
+        disRatioFeaConf = disRatioItems.map { item =>
+          val space: String = Utils.spaceParse(item.space)
+          val fkey: String = item.fKey
+          val distinctKey: String = item.distinctKey
+          val topSpace: String = item.topSpace
+          val bottomSpace: String = item.bottomSpace
+
+          s"""COUNT(DISTINCT(IF(${space} AND ${bottomSpace} AND ${topSpace}, concat_ws('|', ${distinctKey}), NULL)))
+             |\t\t\t/ COUNT(DISTINCT(IF(${space} AND ${bottomSpace}, concat_ws('|', ${distinctKey}), NULL))) AS ${fkey}
+             |""".stripMargin
+        }.mkString(",\n\t\t    ")
+
       }
 
 
@@ -207,13 +259,40 @@ class GroupAggregator extends Serializable {
 
       println(statsItems.mkString("|"))
 
+      statsFeaConf = statsItems.map { item =>
+        val space: String = Utils.spaceParse(item.space)
+        val fkey: String = item.fKey
+        val func: String = item.func
+        val statsKey: String = item.statsKey
+        val truncate: Float = item.truncate
+        var feaLine: String = ""
+        if(func.contains("PCT")) {
+          val pctFunc = "percentile_approx"
+          val pctPoint = func.split(",")(1).trim.toDouble
+          val pctB:Int = 50000
+          feaLine =
+            s"""
+               |\t\t\t${pctFunc}(IF(${space},
+               |\t\t\t\tIF(${statsKey} >= ${truncate},
+               |\t\t\t\t\t${truncate}, ${statsKey}), NULL), ${pctPoint}, ${pctB}) AS ${fkey}
+               |""".stripMargin
+        } else {
+          feaLine =
+            s"""
+               |\t\t\t${func}(IF(${space},
+               |\t\t\t\tIF(${statsKey} >= ${truncate},
+               |\t\t\t\t\t${truncate}, ${statsKey}), NULL)) AS ${fkey}
+               |""".stripMargin
+        }
+        feaLine
+      }.mkString("\t\t\t,\n\t\t    ")
+
     }
 
-    /**
-     *  sql term
-     */
-
-
+    feaConf = Array(countFeaConf, disCountFeaConf,
+          ratioFeaConf, disRatioFeaConf, statsFeaConf)
+      .filter{feaConf =>feaConf != "" }
+      .mkString(",\n")
 
   }
 
