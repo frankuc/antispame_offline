@@ -1,8 +1,10 @@
 package group
 
 import org.apache.spark.sql.SparkSession
+
 import scala.xml.NodeSeq
-import feature.Utils
+import feature.{LogInfo, Utils}
+import log.{Log, LogFactory}
 
 case class CountingItem(fKey: String, space: String) {
   override def toString: String = {
@@ -52,6 +54,10 @@ class GroupAggregator extends Serializable {
   var date:String = ""
   var hour:String = ""
   var window:Int = 1
+  var version:String = ""
+
+  var logInfo:LogInfo = null
+  var logFactory:Log = null
 
   var countItems: Array[CountingItem] = null
   var disCountItems: Array[DistinctItem] = null
@@ -60,12 +66,24 @@ class GroupAggregator extends Serializable {
   var statsItems: Array[StatsItem] = null
   var schemaItems: Array[SchemaItem] = null
 
+  var fKeys:String = ""
+  var feaConf:String = ""
+  var groupKeyMap:String = ""
+  var logSpace:String = ""
+  var groupName:String = ""
+
 
   def initialize(groupNode: NodeSeq, args:GroupExecutorArgs) = {
     this.outHiveTable = args.outHiveTable
     this.date =  args.date
     this.hour = args.hour
     this.window = args.window
+    this.version = (groupNode \ "group").text.trim
+
+    logInfo = Utils.basicInfo(groupNode)
+    logSpace = logInfo.space
+    groupName = logInfo.groupName
+    logFactory = LogFactory.get(logInfo.baseLog)
 
     val schemaNodes = (groupNode \ "schema_list" \ "schema").map(_.text.trim)
     if(schemaNodes.size > 0 ) {
@@ -75,6 +93,7 @@ class GroupAggregator extends Serializable {
       println(schemaItems.mkString("|"))
     }
 
+    fKeys = (groupNode \ "feature_list" \ "feature" \ "fkey").map(_.text.trim).mkString(",\n")
 
     val countNodes = (groupNode \ "feature_list" \ "feature")
       .filter(x => (x \ "aggregator" \ "type").text.trim == "count")
@@ -190,20 +209,87 @@ class GroupAggregator extends Serializable {
 
     }
 
-
-
+    /**
+     *  sql term
+     */
 
 
 
   }
 
   def sqlQuery(): String = {
+    val baseSql:String =
+      s"""
+        |base_log AS (
+        |    SELECT  *
+        |    FROM    ${logInfo.baseLog}
+        |    WHERE   ${logSpace}
+        |)
+        |""".stripMargin
 
-    ""
+    println(baseSql)
+
+    val groupSql:String =
+      s"""
+        |feature_group AS (
+        |    SELECT  group_schema,
+        |            group_pattern,
+        |            ${feaConf}
+        |    FROM    (
+        |                SELECT  *
+        |                FROM    base_log
+        |                LATERAL VIEW
+        |                        EXPLODE(
+        |                            MAP(
+        |                               ${groupKeyMap}
+        |                            )
+        |                        ) t AS group_schema,
+        |                        group_pattern
+        |            ) raw_log
+        |    GROUP BY
+        |            group_schema,
+        |            group_pattern
+        |)
+        |
+        |""".stripMargin
+
+    println(groupSql)
+
+    val writeSql:String =
+      s"""
+         |INSERT OVERWRITE TABLE ${outHiveTable} PARTITION (
+         |    date = '${date}',
+         |    hour = '${hour}',
+         |    version = '${version}'
+         |)
+         |
+         |SELECT  group_schema,
+         |        group_pattern,
+         |        TO_JSON(
+         |            STRUCT(
+         |              ${fKeys}
+         |            )
+         |        ) AS feature_json
+         |FROM    feature_group
+         |""".stripMargin
+
+    println(writeSql)
+
+    val query :String = baseSql + ",\n" + groupSql + "\n" + writeSql
+
+    query
   }
 
   def compute(spark:SparkSession): Unit = {
-    println("hello compute()")
+
+    val log = logFactory.logString(date, hour, window)
+
+    val query:String = log + ",\n" + sqlQuery()
+
+    println(query)
+
+    //spark.sql(query)
+
   }
 
 }
