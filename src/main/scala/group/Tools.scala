@@ -2,7 +2,7 @@ package group
 
 import scala.xml.NodeSeq
 
-object Utils {
+object Tools {
 
   private def duplicateFtest(groupNode:NodeSeq): Unit = {
     val features = (groupNode \ "feature_list" \ "feature" \ "fkey").map(_.text.trim)

@@ -26,15 +26,15 @@ object GroupExecutor {
     val args = new GroupExecutorArgs(argv)
     val xmlFile = XML.loadFile(args.GroupConfig)
 
-    Utils.featureGroupCheck(xmlFile, args.GroupNames)
-    Utils.duplicateGroupNameTest(xmlFile)
+    Tools.featureGroupCheck(xmlFile, args.GroupNames)
+    Tools.duplicateGroupNameTest(xmlFile)
 
     val groupNodes =  args.GroupNames.map { groupName =>
       val groupNode = (xmlFile \ "feature-group").filter(x => (x \ "group").text == groupName)
       groupNode
     }
 
-    groupNodes.map{ groupNode => Utils.groupXmlConfCheck(groupNode) }
+    groupNodes.map{ groupNode => Tools.groupXmlConfCheck(groupNode) }
 
     val threadNums = groupNodes.length
     val list = new util.ArrayList[Future[Unit]]()
