@@ -316,7 +316,7 @@ class GroupAggregator extends Serializable {
         |            ${feaConf}
         |    FROM    (
         |                SELECT  *
-        |                FROM    base_log
+        |                FROM    ${logInfo.baseLog}
         |                LATERAL VIEW
         |                        EXPLODE(
         |                            MAP(
@@ -324,6 +324,7 @@ class GroupAggregator extends Serializable {
         |                            )
         |                        ) t AS group_schema,
         |                        group_pattern
+        |                WHERE   ${logSpace}
         |            ) raw_log
         |    GROUP BY
         |            group_schema,
@@ -354,7 +355,9 @@ class GroupAggregator extends Serializable {
 
     println(writeSql)
 
-    val query :String = baseSql + ",\n" + groupSql + "\n" + writeSql
+    //val query :String = baseSql + ",\n" + groupSql + "\n" + writeSql
+
+    val query :String = groupSql + "\n" + writeSql
 
     query
   }
