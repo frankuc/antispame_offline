@@ -12,6 +12,7 @@ import scala.xml.XML
 
 import java.util.concurrent.{Callable, Executors, Future}
 import java.util
+import scala.collection.JavaConverters._
 
 object GroupExecutor {
 
@@ -44,6 +45,10 @@ object GroupExecutor {
       })
       list.add(task)
     }
+
+    list.asScala.foreach( result => {
+      println(result.get())
+    })
 
     spark.stop()
   }
