@@ -367,7 +367,7 @@ class GroupAggregator extends Serializable {
 
     println(query)
 
-    //spark.sql(query)
+    spark.sql(query)
 
   }
 
