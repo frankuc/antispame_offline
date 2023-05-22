@@ -125,13 +125,13 @@ object Utils {
       .filter(x => (x \ "aggregator" \ "type").text.trim == "distinct_ratio")
 
     if(disRatioXmlNode.length > 0) {
-      ratioXmlNode.map { x =>
+      disRatioXmlNode.map { x =>
         val Array(fKey, space, distinctKey, topSpace, bottomSpace) =
           Array(x \ "fkey", x \ "space", x \ "aggregator" \ "distinctkey", x \ "aggregator" \ "top",
             x \ "aggregator" \ "bottom").map(_.text.trim)
 
         if(topSpace == "" || bottomSpace == "" || distinctKey == "") {
-          throw new Exception(s"please config topSpace and bottomSpace and  distinctKey in xml for ${fKey}")
+          throw new Exception(s"please config topSpace and bottomSpace and distinctKey in xml for ${fKey}")
         }
       }
     }
