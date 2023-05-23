@@ -79,7 +79,7 @@ class StatsAggregator extends Aggregator {
         if(func.contains("PCT")) {
           val pctFunc = "percentile_approx"
           val pctPoint = func.split(",")(1).trim.toDouble
-          val pctB:Int = 50000
+          val pctB:Int = 5000
           feaLine =
             s"""
                |\t\t\t${pctFunc}(IF(${space},
