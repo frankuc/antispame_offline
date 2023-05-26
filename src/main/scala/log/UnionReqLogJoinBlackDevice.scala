@@ -114,7 +114,7 @@ class UnionReqLogJoinBlackDevice extends Log {
       |            request_id
       |),
       |${logName} AS (
-      |SELECT  tb1.request_id AS request_id,
+      |SELECT  tb1.request_id AS req_id,
       |        union_api_status,
       |        status_code,
       |        rit,
