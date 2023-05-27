@@ -1,5 +1,8 @@
 package group
 
+import org.apache.spark.sql.SparkSession
+import scala.xml.NodeSeq
+
 class GroupUGPerformance extends  Serializable {
 
   var date:String = ""
