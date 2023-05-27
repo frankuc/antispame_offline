@@ -7,6 +7,9 @@
 
 package group
 
+import org.apache.spark.sql.SparkSession
+import scala.xml.XML
+
 import java.util
 import java.util.concurrent.{Callable, Executors, Future}
 import scala.collection.JavaConverters._
