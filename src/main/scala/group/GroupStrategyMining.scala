@@ -212,7 +212,7 @@ class GroupStrategyMining  extends Serializable {
     val adPerformanceQuery =
       s"""
          |
-         |game_res AS (
+         |WITH game_res AS (
          |    SELECT  group_schema,
          |            rule_condition,
          |            SUM(get_json_object(game_json, '$$.game_activation_cnt')) AS game_activation_cnt,
