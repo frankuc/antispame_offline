@@ -128,6 +128,7 @@ class UnionReqLogJoinBlackDevice extends Log {
       |        user_agent,
       |        device_type,
       |        ip,
+      |        ipc,
       |        latitude,
       |        longitude,
       |        version,
