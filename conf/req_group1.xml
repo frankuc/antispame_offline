@@ -35,5 +35,23 @@
         <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>ad_source = 1 AND final_decision = 0 AND (antispam_list_rules LIKE '%UIMEI%' OR antispam_list_rules LIKE '%DID%' OR antispam_list_rules LIKE '%SEC_DID%')</top><bottom>true</bottom></aggregator>
       </feature>
     </feature_list>
+    <strategy_list>
+      <strategy>
+        <schema>site_id,city_id,device_model</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.2</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>block_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>5</low><high>100</high><step>10</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>site_id,city_id,district_id,rom_version</schema>
+        <threshold>
+          <grid-dim><feature>block_uimei_ratio</feature><low>0.2</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+    </strategy_list>
   </feature-group>
 </xml>
