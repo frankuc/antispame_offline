@@ -165,6 +165,7 @@ class GroupStrategyMining  extends Serializable {
 
 
   def strategyMining(spark:SparkSession): Unit = {
+    import spark.implicits._
 
     val queryStr = sqlQuery()
     val dataDF = spark.sql(queryStr).cache()
