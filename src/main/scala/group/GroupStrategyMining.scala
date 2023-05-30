@@ -11,6 +11,7 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.{DataFrame,Column}
 import org.apache.spark.sql.functions._
 import scala.util.parsing.json._
+import scala.xml.NodeSeq
 
 case class GridDimItem(fKey: String, low: Double, high:Double, step:Double) {
   override def toString: String = {
