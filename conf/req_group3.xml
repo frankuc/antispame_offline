@@ -36,7 +36,7 @@
       <feature>
         <fkey>black_uimei_ratio</fkey>
         <space>req_id != ''</space>
-        <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>ad_source = 1 AND final_decision = 0 AND (antispam_list_rules LIKE '%UIMEI%' OR antispam_list_rules LIKE '%DID%' OR antispam_list_rules LIKE '%SEC_DID%')</top><bottom>true</bottom></aggregator>
+        <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>final_decision = 0</top><bottom>true</bottom></aggregator>
       </feature>
     </feature_list>
     <strategy_list>
