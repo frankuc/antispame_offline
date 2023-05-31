@@ -20,6 +20,7 @@ class UnionReqLog extends Log {
       |        user_agent,
       |        device_type,
       |        ip,
+      |        IF(ip is not null AND ip != '', IF(SIZE(split(ip, '\\.')) = 4, concat(split(ip, '\\.')[0], '.', split(ip, '\\.')[1], '.', split(ip, '\\.')[2]), ip), ip) as ipc,
       |        latitude,
       |        longitude,
       |        version,

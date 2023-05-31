@@ -1,0 +1,113 @@
+<xml>
+  <feature-group>
+    <group>REQ_GROUP_DEVICE_RESOURCE_V3</group>
+    <log>UnionReqLog</log>
+    <window>24</window>
+    <space>req_id != '' AND req_id IS NOT NULL AND ad_source = 1</space>
+    <schema_list>
+      <schema>site_id,ipc,device_model,rom_version</schema>
+      <schema>site_id,city_id,device_model</schema>
+      <schema>site_id,ad_slot_type,device_model</schema>
+      <schema>wifi_mac</schema>
+      <schema>ipc,device_model</schema>
+      <schema>device_model,rom_version,os_version</schema>
+      <schema>device_vendor,device_model,os_type,os_version</schema>
+      <schema>device_vendor,device_model,rom_version</schema>
+      <schema>device_vendor,device_model,mac</schema>
+      <schema>device_vendor,device_model,wifi_mac</schema>
+      <schema>ad_slot_type,device_vendor,device_model,rom_version</schema>
+    </schema_list>
+    <feature_list>
+      <feature>
+        <fkey>uimei_distinct_cnt</fkey>
+        <space>union_imei != ''</space>
+        <aggregator><type>distinct_count</type><distinctkey>union_imei</distinctkey></aggregator>
+      </feature>
+      <feature>
+        <fkey>req_cnt</fkey>
+        <space>req_id != ''</space>
+        <aggregator><type>count</type></aggregator>
+      </feature>
+      <feature>
+        <fkey>new_uimei_ratio</fkey>
+        <space>req_id != ''</space>
+        <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>union_imei_first_time_difference le 259200</top><bottom>true</bottom></aggregator>
+      </feature>
+      <feature>
+        <fkey>block_uimei_ratio</fkey>
+        <space>req_id != ''</space>
+        <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>hit_black_device_flag = 1</top><bottom>true</bottom></aggregator>
+      </feature>
+      <feature>
+        <fkey>black_uimei_ratio</fkey>
+        <space>req_id != ''</space>
+        <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>ad_source = 1 AND final_decision = 0 AND (antispam_list_rules LIKE '%UIMEI%' OR antispam_list_rules LIKE '%DID%' OR antispam_list_rules LIKE '%SEC_DID%')</top><bottom>true</bottom></aggregator>
+      </feature>
+    </feature_list>
+    <strategy_list>
+      <strategy>
+        <schema>site_id,ipc,device_model,rom_version</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.2</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>5</low><high>100</high><step>10</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>site_id,city_id,device_model</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>site_id,ad_slot_type,device_model</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>wifi_mac</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>ipc,device_model</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>device_model,rom_version,os_version</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>device_vendor,device_model,rom_version</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>device_vendor,device_model,mac</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+      <strategy>
+        <schema>ad_slot_type,device_vendor,device_model,rom_version</schema>
+        <threshold>
+          <grid-dim><feature>black_uimei_ratio</feature><low>0.3</low><high>0.9</high><step>0.1</step></grid-dim>
+          <grid-dim><feature>uimei_distinct_cnt</feature><low>10</low><high>100</high><step>20</step></grid-dim>
+        </threshold>
+      </strategy>
+    </strategy_list>
+  </feature-group>
+</xml>
