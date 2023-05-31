@@ -34,11 +34,6 @@
         <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>union_imei_first_time_difference le 259200</top><bottom>true</bottom></aggregator>
       </feature>
       <feature>
-        <fkey>block_uimei_ratio</fkey>
-        <space>req_id != ''</space>
-        <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>hit_black_device_flag = 1</top><bottom>true</bottom></aggregator>
-      </feature>
-      <feature>
         <fkey>black_uimei_ratio</fkey>
         <space>req_id != ''</space>
         <aggregator><type>distinct_ratio</type><distinctkey>union_imei</distinctkey><top>ad_source = 1 AND final_decision = 0 AND (antispam_list_rules LIKE '%UIMEI%' OR antispam_list_rules LIKE '%DID%' OR antispam_list_rules LIKE '%SEC_DID%')</top><bottom>true</bottom></aggregator>
