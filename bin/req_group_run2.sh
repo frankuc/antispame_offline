@@ -30,14 +30,15 @@ doas spark-submit \
   --conf hive.auto.convert.join=true \
   --conf spark.shuffle.hdfs.enabled=true \
   --conf spark.sql.adaptive.enabled=true \
+  --conf spark.sql.files.ignoreCorruptFiles=true \
   --conf spark.sql.parquet.adaptiveFileSplit=true \
   --conf spark.shuffle.hdfs.mergeIndexAndData.enabled=true \
-  --conf spark.sql.adaptive.maxNumPostShufflePartitions=20000 \
+  --conf spark.sql.adaptive.maxNumPostShufflePartitions=50000 \
   --conf spark.dynamicAllocation.maxExecutors=128 \
   --conf spark.dynamicAllocation.minExecutors=64 \
   --conf spark.dynamicAllocation.initialExecutors=64 \
   --conf spark.vcore.boost.ratio=2 \
-  --conf spark.default.parallelism=20000 \
+  --conf spark.default.parallelism=50000 \
   --conf spark.sql.hive.caseSensitiveInferenceMode=NEVER_INFER \
   --conf spark.scheduler.listenerbus.eventqueue.capacity=200000 \
   --conf spark.kryoserializer.buffer.max=1024m \

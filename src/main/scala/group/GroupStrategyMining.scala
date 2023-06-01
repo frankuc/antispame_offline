@@ -198,7 +198,7 @@ class GroupStrategyMining  extends Serializable {
       val cartesianProd = featureValuePairs.tail.toArray.foldLeft(headPairs)( (acc, elem) =>
         for (x <- acc; y <- elem )  yield x :+ y
       )
-      val rulesArray = cartesianProd.map(x=>x.mkString("|"))
+      val rulesArray = cartesianProd.map(x=>x.mkString("&"))
       rulesArray
      }
     )
