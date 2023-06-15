@@ -70,7 +70,9 @@ class GroupStrategyMining  extends Serializable {
           val step:Double = item.step
           val steps = scala.math.floor(((high - low) / step)).toInt
 
-          var threshArr = (for(i <- 0 to steps) yield (low+i*step).toDouble).toArray
+          var threshArr = (for(i <- 0 to steps) yield (low+i*step).toDouble).toArray.map{ x =>
+            x.formatted("%.3f").toDouble }
+
           if(threshArr.max < high) threshArr = threshArr :+ high
           (fKey, threshArr)
         }.toMap
@@ -198,8 +200,10 @@ class GroupStrategyMining  extends Serializable {
       val cartesianProd = featureValuePairs.tail.toArray.foldLeft(headPairs)( (acc, elem) =>
         for (x <- acc; y <- elem )  yield x :+ y
       )
-      val rulesArray = cartesianProd.map(x=>x.mkString("&"))
-      rulesArray
+      val rulesArray = cartesianProd.map { x =>
+        x.map { t => List(t._1, t._2).map(_.toString).mkString(" >= ") }.mkString(" and ")
+      }
+        rulesArray
      }
     )
 
