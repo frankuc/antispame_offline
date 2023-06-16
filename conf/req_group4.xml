@@ -244,5 +244,13 @@
         </threshold>
       </strategy>
     </strategy_list>
+    <optimization>
+      <opt-target>ug_activation_cnt ge 30</opt-target>
+      <opt-target>ug_day_3_10_scale le 0.1</opt-target>
+      <opt-target>game_activation_cnt ge 30</opt-target>
+      <opt-target>game_day_3_10_scale le 0.1</opt-target>
+      <opt-target>ord_cnt ge 30</opt-target>
+      <opt-target>trust_fail_ratio ge 0.8</opt-target>
+    </optimization>
   </feature-group>
 </xml>
