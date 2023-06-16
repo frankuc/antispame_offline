@@ -16,6 +16,12 @@ import scala.util.parsing.json._
 import scala.xml.NodeSeq
 import feature.Utils.spaceParse
 
+case class optTargetItem(optSpace:String) {
+  override def toString:String = {
+    s"${optSpace}"
+  }
+}
+
 
 class GroupPatternMatch extends Serializable {
   var confParamMap:Map[String, Map[String, Array[Double]]] = null
