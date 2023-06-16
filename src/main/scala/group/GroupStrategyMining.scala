@@ -36,6 +36,42 @@ class GroupStrategyMining  extends Serializable {
   var strategyItems:Array[StrategyItem] = null
 
 
+  val thresholdMap:Map[String, Map[String, Array[Double]]] = confParamMap
+  val partitionUDF = udf((featureJson:String, group_schema:String) => {
+    val jsonValueMap = JSON.parseFull(featureJson).get.asInstanceOf[Map[String,Double]]
+    val paramMap = thresholdMap.getOrElse(group_schema, Map[String, Array[Double]]())
+
+    val partitionMap = paramMap.map { case(feature, valueArr) =>
+      val fVal:Double = jsonValueMap.getOrElse(feature, -1.0D)
+      var partArr:Array[Double] = null
+      val maxVal = valueArr.max
+      val minVal = valueArr.min
+
+      if(fVal < minVal) {
+        partArr = Array(-1.0D)
+      } else if(fVal >= maxVal) {
+        partArr = valueArr
+      } else {
+        val UpIndex = valueArr.zipWithIndex.map{case (v, i) => if(v > fVal) i else -1}.filter(x => x > -1).min
+        partArr = valueArr.slice(0, UpIndex).toArray
+      }
+      feature -> partArr
+    }
+
+    val featureValuePairs = partitionMap.map { case (k,v) => v.map(i => k -> i).toList }
+    val headPairs = featureValuePairs.head.toArray.map(x => Array(x))
+
+    val cartesianProd = featureValuePairs.tail.toArray.foldLeft(headPairs)( (acc, elem) =>
+      for (x <- acc; y <- elem )  yield x :+ y
+    )
+    val rulesArray = cartesianProd.map { x =>
+      x.map { t => List(t._1, t._2).map(_.toString).mkString(" >= ") }.mkString(" and ")
+    }
+    rulesArray
+  }
+  )
+
+
   def initialize(groupNode: NodeSeq, args:GroupExecutorArgs):Unit = {
 
     this.date = args.date
@@ -92,7 +128,7 @@ class GroupStrategyMining  extends Serializable {
 
   }
 
- private def sqlQuery():String = {
+  private def sqlQuery():String = {
 
     val queryStr =
       s"""
@@ -165,47 +201,11 @@ class GroupStrategyMining  extends Serializable {
   }
 
 
-
   def strategyMining(spark:SparkSession): Unit = {
     import spark.implicits._
 
     val queryStr = sqlQuery()
     val dataDF = spark.sql(queryStr).cache()
-    val thresholdMap:Map[String, Map[String, Array[Double]]] = confParamMap
-
-    val partitionUDF = udf((featureJson:String, group_schema:String) => {
-      val jsonValueMap = JSON.parseFull(featureJson).get.asInstanceOf[Map[String,Double]]
-      val paramMap = thresholdMap.getOrElse(group_schema, Map[String, Array[Double]]())
-
-      val partitionMap = paramMap.map { case(feature, valueArr) =>
-        val fVal:Double = jsonValueMap.getOrElse(feature, -1.0D)
-        var partArr:Array[Double] = null
-        val maxVal = valueArr.max
-        val minVal = valueArr.min
-
-        if(fVal < minVal) {
-          partArr = Array(-1.0D)
-        } else if(fVal >= maxVal) {
-          partArr = valueArr
-        } else {
-          val UpIndex = valueArr.zipWithIndex.map{case (v, i) => if(v > fVal) i else -1}.filter(x => x > -1).min
-          partArr = valueArr.slice(0, UpIndex).toArray
-        }
-        feature -> partArr
-      }
-
-      val featureValuePairs = partitionMap.map { case (k,v) => v.map(i => k -> i).toList }
-      val headPairs = featureValuePairs.head.toArray.map(x => Array(x))
-
-      val cartesianProd = featureValuePairs.tail.toArray.foldLeft(headPairs)( (acc, elem) =>
-        for (x <- acc; y <- elem )  yield x :+ y
-      )
-      val rulesArray = cartesianProd.map { x =>
-        x.map { t => List(t._1, t._2).map(_.toString).mkString(" >= ") }.mkString(" and ")
-      }
-        rulesArray
-     }
-    )
 
     val dataExplodeDF = dataDF
       .withColumn("rulePartition", partitionUDF($"feature_json", $"group_schema"))
@@ -526,6 +526,28 @@ class GroupStrategyMining  extends Serializable {
     println("==================================")
 
     spark.sql(adPerformanceQuery)
+
+  }
+
+
+  def groupPatternMatch(spark:SparkSession): Unit = {
+    import spark.implicits._
+
+    val patternQuery =
+      s"""
+         |SELECT  group_schema,
+         |        group_pattern,
+         |        feature_json
+         |FROM    union_anti.ads_union_antispam_group_aggregator_feature_hourly
+         |WHERE   date = '${date}'
+         |AND     hour = '23'
+         |AND     version = '${version}'
+         |
+         |""".stripMargin
+
+    println(patternQuery)
+
+    val patternDF = spark.sql(patternQuery)
 
   }
 
