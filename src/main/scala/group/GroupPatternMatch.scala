@@ -27,6 +27,7 @@ class GroupPatternMatch extends Serializable {
   var confParamMap:Map[String, Map[String, Array[Double]]] = null
   var date:String = ""
   var version:String = ""
+  var strategyDate:String = ""
 
   var schemaItems: Array[SchemaItem] = null
   var schemaItemStr:String = ""
@@ -35,9 +36,10 @@ class GroupPatternMatch extends Serializable {
   var optTargetItems:Array[optTargetItem] = null
 
 
-  def initialize(groupNode: NodeSeq, args:GroupExecutorArgs):Unit = {
+  def initialize(groupNode: NodeSeq, args:GroupPatternMatchArgs):Unit = {
 
     this.date = args.date
+    this.strategyDate = args.strategyDate
     this.version = (groupNode \ "group").text.trim
 
     val strategyNodes = (groupNode \ "strategy_list" \ "strategy")
@@ -181,7 +183,7 @@ class GroupPatternMatch extends Serializable {
          |                        get_json_object(ad_performance_json, '$$.ord_cnt') AS ord_cnt,
          |                        get_json_object(ad_performance_json, '$$.trust_fail_ratio') AS trust_fail_ratio
          |                FROM    union_anti.ads_union_antispam_group_strategy_mining_daily
-         |                WHERE   date = '${date}'
+         |                WHERE   date = '${strategyDate}'
          |                AND     version = '${version}'
          |            )
          |    WHERE  ${optTargetStr}
