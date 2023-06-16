@@ -43,6 +43,7 @@ object GroupStrategyMiningExecutor {
           val groupStrategyMining = new GroupStrategyMining()
           groupStrategyMining.initialize(groupNodes(i), args)
           groupStrategyMining.strategyMining(spark)
+          groupStrategyMining.groupPatternMatch(spark)
         }
       })
       list.add(task)
